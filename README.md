@@ -17,4 +17,7 @@ To generate the jar, just run:
 mvn clean package
 ```
 
+### List of nemesis
+https://jepsen-io.github.io/jepsen/jepsen.nemesis.html
+
 
