@@ -1,0 +1,10 @@
+ #!/bin/bash
+
+ # http://mywiki.wooledge.org/BashFAQ/028
+ if [[ $BASH_SOURCE = */* ]]; then
+     DIR=${BASH_SOURCE%/*}/
+ else
+     DIR=./
+ fi
+
+exec java -Xmx2000M -jar "/home/the123saurav/IdeaProjects/maelstorm/guid/target/guid-1.0-SNAPSHOT.jar"

@@ -11,6 +11,7 @@
     <modules>
         <module>echo</module>
         <module>common</module>
+        <module>guid</module>
     </modules>
 
     <properties>

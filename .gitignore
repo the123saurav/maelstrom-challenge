@@ -26,6 +26,7 @@ target/
 .sts4-cache
 
 echo/dependency-reduced-pom.xml
+guid/dependency-reduced-pom.xml
 store/
 
 ### NetBeans ###

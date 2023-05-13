@@ -26,6 +26,7 @@ import static com.the123saurav.common.Logger.log;
 public class Node {
     // Our local node ID.
     public String nodeId = "uninitialized";
+    public long nodeIdNumberShifted = -1;
 
     // All node IDs
     public List<String> nodeIds = new ArrayList<String>();
@@ -106,10 +107,11 @@ public class Node {
     // Handle an init message, setting up our state.
     public void handleInit(Message request) {
         this.nodeId = request.body.getString("node_id", null);
+        this.nodeIdNumberShifted = Long.parseLong(this.nodeId.split("n")[1]) << 12;
         for (JsonValue id : request.body.get("node_ids").asArray()) {
             this.nodeIds.add(id.asString());
         }
-        log("I am " + nodeId);
+        log(String.format("I am %s", nodeIdNumberShifted >> 12));
     }
 
     // Handle a reply to an RPC request we issued.
