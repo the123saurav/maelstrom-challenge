@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.function.Consumer;
 
-public class EchoHandler extends Node implements Consumer<Message> {
+public class EchoHandler extends Node {
 
     record EchoMessage(
             String type,
@@ -34,7 +34,7 @@ public class EchoHandler extends Node implements Consumer<Message> {
     }
 
     @Override
-    public void accept(Message message) {
+    public void handle(Message message) {
         EchoMessage echoMessage = new EchoMessage(
                 message.body.getString("type", null),
                 message.body.getLong("msg_id", -1),

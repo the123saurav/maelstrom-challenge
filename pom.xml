@@ -12,6 +12,7 @@
         <module>echo</module>
         <module>common</module>
         <module>guid</module>
+        <module>gossip</module>
     </modules>
 
     <properties>

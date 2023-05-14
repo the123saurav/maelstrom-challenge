@@ -10,9 +10,10 @@ import lombok.RequiredArgsConstructor;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
-public class GuidHandler extends Node implements Consumer<Message> {
+public class GuidHandler extends Node {
 
     private long currMs;
+    private long nodeIdNumberShifted;
     private AtomicInteger counter = new AtomicInteger();
 
     /*
@@ -48,7 +49,13 @@ public class GuidHandler extends Node implements Consumer<Message> {
     }
 
     @Override
-    public void accept(Message message) {
+    public void handleInit(Message message) {
+        super.handleInit(message);
+        nodeIdNumberShifted = nodeIdNumber << 12;
+    }
+
+    @Override
+    public void handle(Message message) {
         /*
          Its okay, as long as time doesn't jump back which NTP guarantees,
          not using System.nanoTime as that can be reset across runs

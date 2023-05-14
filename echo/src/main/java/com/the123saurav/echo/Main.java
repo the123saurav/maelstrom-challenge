@@ -5,17 +5,19 @@ import com.the123saurav.common.Message;
 import com.the123saurav.common.Node;
 
 import java.util.Scanner;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static com.the123saurav.common.Logger.log;
 
 public class Main {
-    public static ExecutorService executor = Executors.newCachedThreadPool();
+
 
     public static void main(String[] args) {
         EchoHandler node = new EchoHandler();
-        node.on("echo", node);
+
+        Executor executor = Executors.newVirtualThreadPerTaskExecutor();
 
         final Scanner scanner = new Scanner(System.in);
         try {

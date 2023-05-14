@@ -7,4 +7,4 @@
      DIR=./
  fi
 
-exec java -Xmx2000M -jar "/home/the123saurav/IdeaProjects/maelstorm/echo/target/echo-1.0-SNAPSHOT.jar"
+exec java --enable-preview -Xmx2000M -jar "/home/the123saurav/IdeaProjects/maelstorm/echo/target/echo-1.0-SNAPSHOT.jar"

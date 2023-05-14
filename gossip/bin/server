@@ -7,4 +7,4 @@
      DIR=./
  fi
 
-exec java --enable-preview -Xms4000M -Xmx4000M -jar "/home/the123saurav/IdeaProjects/maelstorm/guid/target/guid-1.0-SNAPSHOT.jar"
+exec java --enable-preview -Xms2000M -Xmx2000M -jar "/home/the123saurav/IdeaProjects/maelstorm/gossip/target/gossip-1.0-SNAPSHOT.jar"

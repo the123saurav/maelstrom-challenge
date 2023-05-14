@@ -27,6 +27,7 @@ target/
 
 echo/dependency-reduced-pom.xml
 guid/dependency-reduced-pom.xml
+gossip/dependency-reduced-pom.xml
 store/
 
 ### NetBeans ###

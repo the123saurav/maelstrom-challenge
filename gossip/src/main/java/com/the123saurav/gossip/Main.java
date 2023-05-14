@@ -1,4 +1,4 @@
-package com.the123saurav.guid;
+package com.the123saurav.gossip;
 
 import com.eclipsesource.json.Json;
 import com.the123saurav.common.Message;
@@ -11,7 +11,7 @@ import static com.the123saurav.common.Logger.log;
 
 public class Main {
     public static void main(String[] args) {
-        GuidHandler node = new GuidHandler();
+        GossipHandler node = new GossipHandler();
 
         final Scanner scanner = new Scanner(System.in);
         Executor executor = Executors.newVirtualThreadPerTaskExecutor();

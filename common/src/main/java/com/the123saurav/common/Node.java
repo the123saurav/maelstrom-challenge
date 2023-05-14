@@ -2,18 +2,11 @@ package com.the123saurav.common;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
-import java.util.TimeZone;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 import java.util.function.Consumer;
 
 import com.eclipsesource.json.Json;
@@ -23,34 +16,33 @@ import com.eclipsesource.json.JsonValue;
 import static com.the123saurav.common.Logger.log;
 
 // This class provides common support functions for writing Maelstrom nodes. It includes an asynchronous RPC facility, and uses an executor to launch handlers.
-public class Node {
+public abstract class Node {
     // Our local node ID.
-    public String nodeId = "uninitialized";
-    public long nodeIdNumberShifted = -1;
+    protected String nodeId = "uninitialized";
+    protected long nodeIdNumber = -1;
 
     // All node IDs
-    public List<String> nodeIds = new ArrayList<String>();
-
-    // A map of request RPC types (e.g. "echo") to Consumer<Message>s which should
-    // be invoked when those messages arrive.
-    public final Map<String, Consumer<Message>> requestHandlers = new HashMap<String, Consumer<Message>>();
+    protected List<String> nodeIds = new ArrayList<String>();
 
     // A map of RPC request message IDs we've sent to CompletableFutures which will
     // receive the response bodies.
-    public final Map<Long, CompletableFuture<JsonObject>> rpcs = new HashMap<Long, CompletableFuture<JsonObject>>();
+    protected final Map<Long, CompletableFuture<JsonObject>> rpcs = new HashMap<Long, CompletableFuture<JsonObject>>();
+
+    static final class DaemonThreadFactory implements ThreadFactory {
+        public Thread newThread(Runnable r) {
+            Thread t = new Thread();
+            t.setDaemon(true);
+            t.setName("TimeoutDetector");
+            return t;
+        }
+    }
+    protected final ScheduledThreadPoolExecutor timeoutExecutor = new ScheduledThreadPoolExecutor(
+            1000, Thread.ofVirtual().factory());
 
     // Our next message ID to generate
     public long nextMessageId = 0;
 
-    public ExecutorService executor = Executors.newCachedThreadPool();
-
     public Node() {
-    }
-
-    // Registers a request handler for the given type of message.
-    public Node on(String type, Consumer<Message> handler) {
-        requestHandlers.put(type, handler);
-        return this;
     }
 
     // Generate a new message ID
@@ -66,9 +58,9 @@ public class Node {
 
     // Send a message to stdout
     public void send(final Message message) {
-        log("Sending  " + message.toJson());
+//        log("Sending  " + message.toJson());
         System.out.println(message.toJson());
-        System.out.flush();
+//        System.out.flush();
     }
 
     // Send a message to a specific node. Automatically assigns a message ID if one
@@ -86,6 +78,7 @@ public class Node {
         final CompletableFuture<JsonObject> f = new CompletableFuture<JsonObject>();
         final long id = newMessageId();
         rpcs.put(id, f);
+
         send(dest, Json.object().merge(request).set("msg_id", id));
         return f;
     }
@@ -105,13 +98,13 @@ public class Node {
     // Handlers ////////////////////////////////////////////////////////////
 
     // Handle an init message, setting up our state.
-    public void handleInit(Message request) {
+    protected void handleInit(Message request) {
         this.nodeId = request.body.getString("node_id", null);
-        this.nodeIdNumberShifted = Long.parseLong(this.nodeId.split("n")[1]) << 12;
+        this.nodeIdNumber = Long.parseLong(this.nodeId.split("n")[1]);
         for (JsonValue id : request.body.get("node_ids").asArray()) {
             this.nodeIds.add(id.asString());
         }
-        log(String.format("I am %s", nodeIdNumberShifted >> 12));
+        log(String.format("I am %s", nodeIdNumber));
     }
 
     // Handle a reply to an RPC request we issued.
@@ -139,16 +132,14 @@ public class Node {
     // body, and calling it with the message.
     public void handleRequest(Message request) {
         final String type = request.body.getString("type", null);
-        Consumer<Message> handler = requestHandlers.get(type);
-        if (handler == null) {
-            // You don't have to register a custom Init handler.
-            if (type.equals("init")) {
-                return;
-            }
-            throw Error.notSupported("Don't know how to handle a request of type " + type);
+        // You don't have to register a custom Init handler.
+        if (type.equals("init")) {
+            return;
         }
-        handler.accept(request);
+        handle(request);
     }
+
+    protected abstract void handle(Message message);
 
     // Handles a parsed message from STDIN
     public void handleMessage(Message message) {
@@ -162,7 +153,7 @@ public class Node {
             // invoking any registered callback.
             if (type.equals("init")) {
                 handleInit(message);
-                handleRequest(message);
+//                handleRequest(message);
                 reply(message, Json.object().add("type", "init_ok"));
             } else if (in_reply_to != -1) {
                 // A reply to an RPC we issued.
