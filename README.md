@@ -5,6 +5,7 @@ It currently features following solutions:
 - boilerplate code to be used across solutions
 - echo server
 - unique id generation
+- multi node broadcast/gossip with network partition
 
 ### Setup
 We are using maven and tested with Java 20.
