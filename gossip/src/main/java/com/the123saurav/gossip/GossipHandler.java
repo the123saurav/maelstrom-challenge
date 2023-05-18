@@ -9,7 +9,6 @@ import com.the123saurav.common.Logger;
 import com.the123saurav.common.Message;
 import com.the123saurav.common.Node;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -124,7 +123,6 @@ public class GossipHandler extends Node {
 
     @Override
     public void handle(Message message) {
-//        Logger.log("Message received is: " + message);
         switch (message.body.getString("type", null)) {
             case "broadcast":
                 handleBroadcast(message);
@@ -171,10 +169,9 @@ public class GossipHandler extends Node {
 
         // Check if message is already seen
         if (messages.get(val) != null) {
-            Logger.log("Received duplicate message: " + val);
+//            Logger.log("Received duplicate message: " + val);
             return;
         }
-//        Logger.log("Recieved new message: " + val);
         messages.put(val, true);
 
 //        int round = message.body.getInt("round", 0);

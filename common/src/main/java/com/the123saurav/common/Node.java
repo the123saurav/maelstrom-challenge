@@ -153,7 +153,6 @@ public abstract class Node {
             // invoking any registered callback.
             if (type.equals("init")) {
                 handleInit(message);
-//                handleRequest(message);
                 reply(message, Json.object().add("type", "init_ok"));
             } else if (in_reply_to != -1) {
                 // A reply to an RPC we issued.
